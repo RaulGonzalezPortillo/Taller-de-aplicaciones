@@ -58,27 +58,29 @@ void Operacion (int Cantidad, int *Numeros, char Seleccion)
 	printf ("Eliga el primer número:\n\n");
 	scanf ("%d", &Numero1);
 	printf ("\n");
+	Numero1 --;
 	printf ("Eliga el segundo número:\n\n");
 	scanf ("%d", &Numero2);
 	printf ("\n");
-	if (Numero1 <= Cantidad && Numero1 > 0 && Numero2 <= Cantidad && Numero2 > 0)
+	Numero2 --;
+	if (Numero1 <= Cantidad - 1 && Numero1 >= 0 && Numero2 <= Cantidad - 1 && Numero2 >= 0)
 	{
 		switch (Seleccion)
 		{
 			case '+':
-			printf ("%d %c %d = %d\n\n", Numeros [Numero1 - 1], Seleccion, Numeros [Numero2 - 1], Numeros [Numero1 - 1] + Numeros [Numero2 - 1]);
+			printf ("%d %c %d = %d\n\n", Numeros [Numero1], Seleccion, Numeros [Numero2], Numeros [Numero1] + Numeros [Numero2]);
 			Enter ();
 			break;
 			case '-':
-			printf ("%d %c %d = %d\n\n", Numeros [Numero1 - 1], Seleccion, Numeros [Numero2 - 1], Numeros [Numero1 - 1] - Numeros [Numero2 - 1]);
+			printf ("%d %c %d = %d\n\n", Numeros [Numero1], Seleccion, Numeros [Numero2], Numeros [Numero1] - Numeros [Numero2]);
 			Enter ();
 			break;
 			case 'x':
-			printf ("%d %c %d = %d\n\n", Numeros [Numero1 - 1], Seleccion, Numeros [Numero2 - 1], Numeros [Numero1 - 1] * Numeros [Numero2 - 1]);
+			printf ("%d %c %d = %d\n\n", Numeros [Numero1], Seleccion, Numeros [Numero2], Numeros [Numero1] * Numeros [Numero2]);
 			Enter ();
 			break;
 			case '/':
-			printf ("%d %c %d = %d\n\n", Numeros [Numero1 - 1], Seleccion, Numeros [Numero2 - 1], Numeros [Numero1 - 1] / Numeros [Numero2 - 1]);
+			printf ("%d %c %d = %d\n\n", Numeros [Numero1], Seleccion, Numeros [Numero2], Numeros [Numero1] / Numeros [Numero2]);
 			Enter ();
 			break;
 		}

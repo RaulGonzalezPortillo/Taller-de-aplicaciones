@@ -3,9 +3,10 @@
 
 void Fibonacci (int RepeticionesInf, int RepeticionesSup, int IteracionActual, clock_t Inicio, long long int Penultimo, long long int Ultimo)
 {
-	double Tiempo = 0.0;
 	clock_t Fin = clock ();
+	double Tiempo = 0.0;
 	Tiempo += (double)(Fin - Inicio) / CLOCKS_PER_SEC;
+	clock_t InicioImpresion = clock ();
 	FILE *Archivo;
 	Archivo = fopen ("DatosRecursivo.txt", "at");
 	if (IteracionActual >= RepeticionesInf)
@@ -17,6 +18,8 @@ void Fibonacci (int RepeticionesInf, int RepeticionesSup, int IteracionActual, c
 	}
 	if (IteracionActual < RepeticionesSup)
 	{
+		clock_t FinImpresion = clock ();
+		Tiempo -= (double)(FinImpresion - InicioImpresion) / CLOCKS_PER_SEC;
 		Fibonacci (RepeticionesInf, RepeticionesSup, IteracionActual + 1, Inicio, Ultimo, Penultimo + Ultimo);
 	}
 }

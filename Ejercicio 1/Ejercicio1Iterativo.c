@@ -14,20 +14,20 @@ int main (void)
 	scanf ("%d", &RepeticionesSup);
 	Num1 = 0;
 	Num2 = 1;
-	clock_t Inicio = clock ();
 	for (IteracionActual = 2; IteracionActual <= RepeticionesSup; IteracionActual++)
 	{
+		clock_t Inicio = clock ();
 		Resultado = Num1 + Num2;
 		Num1 = Num2;
 		Num2 = Resultado;
+		clock_t Fin = clock ();
 		if (IteracionActual >= RepeticionesInf)
 		{
-			clock_t Fin = clock ();
-			Tiempo = (double)(Fin - Inicio) / CLOCKS_PER_SEC;
+			Tiempo += (double)(Fin - Inicio) / CLOCKS_PER_SEC;
 			fprintf (Archivo, "%d ", IteracionActual);
 			printf ("Iteración %d = %lld - ", IteracionActual, Resultado);
 			fprintf (Archivo, "%f\n", Tiempo);
-			printf ("%fs\n", Tiempo);	
+			printf ("%fs\n", Tiempo);
 		}
 	}
 	printf ("El resultado es: %lld\n", Resultado);

@@ -58,7 +58,7 @@ void Resolver (double sizeoft, TipoSenal *Senal) //Esta funci√≥n recibe el tama√
     Sumatoria = 0;
     for (j = 1; j <= Senal -> n; j++)
     {
-      Sumatoria += (j - ((Senal -> A / (M_PI * j)) * (cos (M_PI * j) - 1) * (sin (2 * M_PI * j * Senal -> f * Senal -> t[i]))));
+      Sumatoria += (- ((Senal -> A / (M_PI * j)) * (cos (M_PI * j) - 1) * (sin (2 * M_PI * j * Senal -> f * Senal -> t[i]))));
       //printf (" %lf", Sumatoria);
     }
     Senal -> ft[i] = Sumatoria + (Senal -> A / 2);

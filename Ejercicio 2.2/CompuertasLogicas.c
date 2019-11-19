@@ -1,12 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <time.h>
-
-typedef enum
-{
-  ERROR_OK = 0
-} ERROR_CODE;
 
 /*Estructura de una neurona
 -TamanoMatriz = Tamaño de la matriz de pesos de la neurona
@@ -17,8 +11,6 @@ typedef struct Def_Neurona
 {
   int TamanoMatriz;
   double *W;
-  struct Def_Neurona *NextLayer;
-  double Error;
   double Bw;
 } Neurona;
 
@@ -59,6 +51,29 @@ void LeerX (int TamanoMatriz, int *X)
   printf ("\n");
 }
 
+/*Función que resuelve la ecuación LTI dados una neurona con sus pesos establecidos,
+el tamaño de la matriz de los pesos y un arreglo con valores de entrada*/
+double Ecuacion (Neurona NeuronaActual, int *X)
+{
+  double ResultadoEcuacion = 0;
+  for (int i = 0; i < NeuronaActual.TamanoMatriz; i++)
+    ResultadoEcuacion += X[i]*NeuronaActual.W[i];
+  ResultadoEcuacion += NeuronaActual.Bw;
+  return ResultadoEcuacion;
+}
+
+/*Función que resuelve la ecuación LTI dados una neurona con sus pesos establecidos,
+el tamaño de la matriz de los pesos y una matriz con valores de entrada*/
+double EcuacionHebb (Neurona NeuronaActual, int Tabla[4][3], int Iteracion)
+{
+  double ResultadoEcuacion = 0;
+  for (int i = 0; i < NeuronaActual.TamanoMatriz; i++)
+    ResultadoEcuacion += Tabla[Iteracion][i]*NeuronaActual.W[i];
+  ResultadoEcuacion += NeuronaActual.Bw;
+  printf ("Resultado = %f\t", ResultadoEcuacion);
+  return ResultadoEcuacion;
+}
+
 /*Función que verifica que el valor que recibe está sobre o debajo del Threshold (0.5)*/
 int VerificarThreshold (double ResultadoEcuacion)
 {
@@ -77,52 +92,48 @@ int VerificarThresholdHebb (double ResultadoEcuacion)
     return -1;
 }
 
-/*Función que resuelve la ecuación LTI dados una neurona con sus pesos establecidos,
-el tamaño de la matriz de los pesos y una matriz con valores de entrada*/
-double Ecuacion (Neurona NeuronaActual, int *X)
+/*Función que imprime los valores que se encuentren en la matriz de pesos de una
+neurona dada*/
+void ImprimirPesosIniciales (Neurona NeuronaActual)
 {
-  double ResultadoEcuacion = 0;
   for (int i = 0; i < NeuronaActual.TamanoMatriz; i++)
-    ResultadoEcuacion += X[i]*NeuronaActual.W[i];
-  ResultadoEcuacion += NeuronaActual.Bw;
-  return ResultadoEcuacion;
+    printf ("Peso inicial %d: %f\t", i + 1, NeuronaActual.W[i]);
+  printf ("\n\n");
 }
 
-/*Función que resuelve la ecuación LTI dados una neurona con sus pesos establecidos,
-el tamaño de la matriz de los pesos y una matriz con valores de entrada*/
-double EcuacionHebb (Neurona NeuronaActual, int Tabla[4][3], int Iteracion)
+/*Función que dada una neurona, una Tabla con Entradas y Salidas esperadas y el número
+de iteración actual, imprime la salida esperada siguiente y las entradas que se utilizaran
+para calcularla*/
+void ImprimirDatosSiguienteIteracion (Neurona NeuronaActual, int Tabla[4][3], int Iteracion)
 {
-  for(int ContadorEntradas = 0; ContadorEntradas < NeuronaActual.TamanoMatriz; ContadorEntradas++)
-    printf ("Entrada: %d\n", Tabla[Iteracion][ContadorEntradas]);
-  double ResultadoEcuacion = 0;
+  printf ("Siguiente resultado: %d\n", Tabla[Iteracion][NeuronaActual.TamanoMatriz]);
   for (int i = 0; i < NeuronaActual.TamanoMatriz; i++)
-    ResultadoEcuacion += Tabla[Iteracion][i]*NeuronaActual.W[i];
-  ResultadoEcuacion += NeuronaActual.Bw;
-  printf ("EcuacionHebb resolvió para un valor de: %f\n", ResultadoEcuacion);
-  return ResultadoEcuacion;
+    printf ("Entrada %d = %d\t", i + 1, Tabla[Iteracion][i]);
+  printf ("\n\n");
 }
 
-void EntrenarNeuronaHebb (Neurona *NeuronaActual, int Tabla[4][3], int Combinaciones)
+/*Función que dada una Tabla con Entradas y Salidas esperadas y una Neurona, entrena
+a la Neurona (ajusta su matriz de pesos) para producir las Salidas de la Tabla
+en base a las Entradas*/
+void EntrenarNeuronaHebb (Neurona *NeuronaActual, int Tabla[4][3])
 {
   int Iteracion = 0;
   double ResultadoEcuacion = 0, VelocidadAprendizaje = 0.2;
-  for (int ContadorPesos = 0; ContadorPesos < NeuronaActual -> TamanoMatriz; ContadorPesos++)
-    printf ("Peso inicial %d: %f\n", ContadorPesos + 1, NeuronaActual -> W[ContadorPesos]);
-  printf ("\n");
-  printf ("Siguiente resultado esperado: %d\n", Tabla[0][1]);
-  while (Iteracion < Combinaciones)
+  ImprimirPesosIniciales (*NeuronaActual);
+  ImprimirDatosSiguienteIteracion (*NeuronaActual, Tabla, Iteracion);
+  while (Iteracion < NeuronaActual -> TamanoMatriz * 2)
   {
     ResultadoEcuacion = EcuacionHebb (*NeuronaActual, Tabla, Iteracion);
     if (VerificarThresholdHebb(ResultadoEcuacion) == Tabla[Iteracion][NeuronaActual -> TamanoMatriz])
     {
-      printf ("Correcto\n\n");
+      printf ("- Correcto\n\n");
       Iteracion++;
-      if(Iteracion != Combinaciones)
-        printf ("Siguiente resultado esperado: %d\n", Tabla[Iteracion][NeuronaActual->TamanoMatriz]);
+      if(Iteracion != NeuronaActual -> TamanoMatriz * 2)
+        ImprimirDatosSiguienteIteracion (*NeuronaActual, Tabla, Iteracion);
     }
     else
     {
-      printf ("Incorrecto\n");
+      printf ("- Incorrecto\n");
       for (int i = 0; i < NeuronaActual->TamanoMatriz; i++)
       {
         NeuronaActual->W[i] =  NeuronaActual->W[i] + (VelocidadAprendizaje * Tabla[Iteracion][NeuronaActual->TamanoMatriz] * Tabla[Iteracion][i]);
@@ -131,9 +142,11 @@ void EntrenarNeuronaHebb (Neurona *NeuronaActual, int Tabla[4][3], int Combinaci
       printf ("\n");
     }
   }
-  printf ("Fin del entrenamiento\n\n");
+  printf ("INFO: Fin del entrenamiento\n\n");
 }
 
+/*Función principal, declara a las Neuronas y a las Tablas de Verdad y llama a Tablas
+funciones necesarias para instanciar, entrenar y operar a las neuronas mencionadas*/
 int main (void)
 {
   system ("clear");
@@ -158,12 +171,12 @@ int main (void)
   InstanciarNeuronaHebb (&AndHebb, 2);
   InstanciarNeuronaHebb (&OrHebb, 2);
   InstanciarNeuronaHebb (&NotHebb, 1);
-  printf ("Inicia entrenamiento para neurona And:\n\n");
-  EntrenarNeuronaHebb (&AndHebb, TablaAnd, 4);
-  printf ("Inicia entrenamiento para neurona Or:\n\n");
-  EntrenarNeuronaHebb (&OrHebb, TablaOr, 4);
-  printf ("Inicia entrenamiento para neurona Not:\n\n");
-  EntrenarNeuronaHebb (&NotHebb, TablaAnd, 2);
+  printf ("INFO: Inicia entrenamiento para neurona AND:\n____________________________________________\n\n");
+  EntrenarNeuronaHebb (&AndHebb, TablaAnd);
+  printf ("INFO: Inicia entrenamiento para neurona OR:\n___________________________________________\n\n");
+  EntrenarNeuronaHebb (&OrHebb, TablaOr);
+  printf ("INFO: Inicia entrenamiento para neurona NOT:\n____________________________________________\n\n");
+  EntrenarNeuronaHebb (&NotHebb, TablaNot);
   do
   {
     printf ("Seleccione la neurona con que trabajar:\n\n");
@@ -174,8 +187,7 @@ int main (void)
     printf ("4.- And\n");
     printf ("5.- Or\n");
     printf ("6.- Not\n");
-    printf ("7.- Xor\n");
-    printf ("8.- Salir\n");
+    printf ("7.- Salir\n");
     printf ("\n");
     scanf ("%d", &Repetir);
     printf ("\n");
@@ -210,8 +222,11 @@ int main (void)
       break;
     }
   }
-  while (Repetir != 8);
+  while (Repetir != 7);
   free (And.W);
   free (Or.W);
   free (Not.W);
+  free (AndHebb.W);
+  free (OrHebb.W);
+  free (NotHebb.W);
 }
